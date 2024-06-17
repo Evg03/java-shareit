@@ -1,9 +1,7 @@
 package ru.practicum.shareit.item;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.IncorrectOwnerIdException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
@@ -19,15 +17,10 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@AllArgsConstructor
-@Qualifier("ItemServiceImpl")
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    @Autowired
-    @Qualifier("InMemoryItemStorage")
     private final ItemStorage itemStorage;
-    @Autowired
-    @Qualifier("InMemoryUserStorage")
     private final UserStorage userStorage;
 
     @Override

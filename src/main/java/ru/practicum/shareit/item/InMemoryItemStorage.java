@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-@Qualifier("InMemoryItemStorage")
 public class InMemoryItemStorage implements ItemStorage {
 
     private final Map<Integer, Item> items = new HashMap<>();
