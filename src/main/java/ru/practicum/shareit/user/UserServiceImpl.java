@@ -3,12 +3,12 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.EmailAlreadyExistsException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,65 +16,56 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Override
     public UserDto addUser(UserDto userDto) {
-        String email = userDto.getEmail();
-        if (userStorage.containsEmail(email)) {
-            throw new EmailAlreadyExistsException(String.format("Пользователь с email = %s уже существует", email));
-        }
-        User user = userStorage.addUser(new User(0, userDto.getName(), email));
+        User user = userRepository.save(new User(null, userDto.getName(), userDto.getEmail()));
         log.info("Пользователь с id = {} добавлен", user.getId());
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserDto getUser(int userId) {
-        User user = userStorage.getUser(userId);
-        if (user == null) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
             log.warn("Пользователя с id = {} не существует", userId);
             throw new UserNotFoundException(String.format("Пользователя с id = %s не существует", userId));
         }
-        return UserMapper.toUserDto(user);
+        return UserMapper.toUserDto(user.get());
     }
 
     @Override
     public UserDto updateUser(int userId, UserUpdateDto userUpdateDto) {
-        User user = userStorage.getUser(userId);
-        if (user == null) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
             log.warn("Пользователя с id = {} не существует", userId);
             throw new UserNotFoundException(String.format("Пользователя с id = %s не существует", userId));
         }
+        User user = userOptional.get();
         String newEmail = userUpdateDto.getEmail();
-        if (newEmail != null && !user.getEmail().equals(newEmail)) {
-            if (userStorage.containsEmail(newEmail)) {
-                throw new EmailAlreadyExistsException(String.format("Пользователь с email = %s уже существует", newEmail));
-            }
-            user.setEmail(newEmail);
-        }
+        if (newEmail != null) user.setEmail(newEmail);
         String newName = userUpdateDto.getName();
         if (newName != null) {
             user.setName(newName);
         }
-        userStorage.updateUser(user);
-        return UserMapper.toUserDto(user);
+        return UserMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
     public void deleteUser(int userId) {
-        User user = userStorage.getUser(userId);
-        if (user == null) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
             log.warn("Пользователя с id = {} не существует", userId);
             throw new UserNotFoundException(String.format("Пользователя с id = %s не существует", userId));
         }
-        userStorage.deleteUser(userId);
+        userRepository.deleteById(userId);
         log.info("Пользователь с id = {} удалён", userId);
     }
 
     @Override
     public List<UserDto> getUsers() {
-        List<UserDto> users = userStorage.getUsers().stream()
+        List<UserDto> users = userRepository.findAll().stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
         log.info("Количество пользователей = {}", users.size());

@@ -2,23 +2,31 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.practicum.shareit.request.ItemRequest;
+import lombok.RequiredArgsConstructor;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
+@RequiredArgsConstructor
+@Entity
+@Table(name = "items")
 public class Item {
-    @NotNull
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @NotBlank(message = "Имя не должно быть пустым или null")
     private String name;
     @NotBlank(message = "Описание не должно быть пустым или null")
     private String description;
     @NotNull(message = "Статус вещи не может быть null")
+    @Column(name = "is_available")
     private boolean available;
     @NotNull
+    @Column(name = "owner_id")
     private Integer owner;
-    private ItemRequest request;
+    @Column(name = "request_id")
+    private Integer request;
 }
