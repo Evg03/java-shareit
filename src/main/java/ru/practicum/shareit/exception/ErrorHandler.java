@@ -35,10 +35,24 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleUnknownStateException(final UnknownStateException e) {
+        log.warn("Unknown state: UNSUPPORTED_STATUS", e);
+        return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS", e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
         log.warn("Ошибка. Пользователь не найден", e);
         return new ErrorResponse("Ошибка. Пользователь не найден", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleBookingNotFoundException(final BookingNotFoundException e) {
+        log.warn("Ошибка. Бронирование не найдено", e);
+        return new ErrorResponse("Ошибка. Бронирование не найдено", e.getMessage());
     }
 
     @ExceptionHandler
@@ -50,8 +64,44 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handleIncorrectOwnerIdException(final IncorrectOwnerIdException e) {
+    public ErrorResponse handleIncorrectItemOwnerIdException(final IncorrectItemOwnerIdException e) {
         log.warn("Ошибка. Неправильный id владельца.", e);
         return new ErrorResponse("Ошибка. Неправильный id владельца.", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleIncorrectBookingOwnerIdException(final IncorrectBookingOwnerIdException e) {
+        log.warn("Ошибка. Неправильный id владельца.", e);
+        return new ErrorResponse("Ошибка. Неправильный id владельца.", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBookingAlreadyApprovedException(final BookingStatusAlreadyChangedException e) {
+        log.warn("Ошибка. Бронирование уже одобрено.", e);
+        return new ErrorResponse("Ошибка. Бронирование уже одобрено.", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleBookingOwnItemException(final BookingOwnItemException e) {
+        log.warn("Ошибка. Нельзя забронировать собственный Item.", e);
+        return new ErrorResponse("Ошибка. Нельзя забронировать собственный Item.", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleItemNotRentedByUserException(final ItemNotRentedByUserException e) {
+        log.warn("Ошибка. Пользователь не брал Item в аренду.", e);
+        return new ErrorResponse("Ошибка. Пользователь не брал Item в аренду.", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleItemNotAvailableException(final ItemNotAvailableException e) {
+        log.warn("Ошибка. Item не доступен для бронирования.", e);
+        return new ErrorResponse("Ошибка. Item не доступен для бронирования.", e.getMessage());
+    }
+
 }
