@@ -13,7 +13,8 @@ public class ItemMapper {
                 item.isAvailable(),
                 null,
                 null,
-                null
+                null,
+                item.getRequest()
         );
     }
 

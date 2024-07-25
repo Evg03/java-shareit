@@ -48,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
                 userId,
-                null));
+                itemDto.getRequestId()));
         return ItemMapper.toItemDto(item);
     }
 

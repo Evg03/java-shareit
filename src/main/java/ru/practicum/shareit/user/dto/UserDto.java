@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 public class UserDto {
-    Integer id;
+    private Integer id;
     @NotBlank(message = "Имя не должно быть пустым")
     private String name;
     @Email(message = "Некорректный email")

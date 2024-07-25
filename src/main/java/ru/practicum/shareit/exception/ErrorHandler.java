@@ -104,4 +104,11 @@ public class ErrorHandler {
         return new ErrorResponse("Ошибка. Item не доступен для бронирования.", e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleRequestNotFoundException(final RequestNotFoundException e) {
+        log.warn("Ошибка. Request не найден", e);
+        return new ErrorResponse("Ошибка. Request не найден", e.getMessage());
+    }
+
 }
