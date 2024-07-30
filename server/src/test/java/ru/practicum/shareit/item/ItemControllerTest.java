@@ -66,10 +66,6 @@ public class ItemControllerTest {
     private final CommentDto commentDto = new CommentDto(1, "test comment", "name", LocalDateTime.now());
     private final CommentCreateDto commentCreateDto = new CommentCreateDto();
 
-    {
-        commentCreateDto.setText("test comment");
-    }
-
     @Test
     public void addItem() throws Exception {
         when(itemService.addItem(any(ItemDto.class), anyInt())).thenReturn(itemDto);
@@ -94,6 +90,7 @@ public class ItemControllerTest {
 
     @Test
     public void addComment() throws Exception {
+        commentCreateDto.setText("test comment");
         when(itemService.addComment(anyInt(), anyInt(), any(CommentCreateDto.class))).thenReturn(commentDto);
         mvc.perform(post("/items/" + 1 + "/comment")
                         .content(objectMapper.writeValueAsString(commentCreateDto))
