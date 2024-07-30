@@ -71,7 +71,6 @@ public class BookingServiceImpl implements BookingService {
                 itemOptional.get(),
                 userOptional.get(),
                 BookingStatus.WAITING.name());
-        bookingRepository.save(booking);
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
