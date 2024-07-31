@@ -1,6 +1,7 @@
 package ru.practicum.shareit.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +15,15 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(final Exception e) {
+        log.warn("Ошибка на стороне сервера", e);
+        return new ErrorResponse(
+                "Ошибка на стороне сервера", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDataIntegrityViolationException(final DataIntegrityViolationException e) {
         log.warn("Ошибка на стороне сервера", e);
         return new ErrorResponse(
                 "Ошибка на стороне сервера", e.getMessage()
@@ -70,7 +80,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleIncorrectBookingOwnerIdException(final IncorrectBookingOwnerIdException e) {
         log.warn("Ошибка. Неправильный id владельца.", e);
         return new ErrorResponse("Ошибка. Неправильный id владельца.", e.getMessage());
