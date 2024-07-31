@@ -148,10 +148,11 @@ public class BookingServiceImplTest {
 
     @Test
     public void addBookingStartIsEqualEnd() {
+        LocalDateTime date = LocalDateTime.now();
         bookingCreateDto = new BookingCreateDto(
                 1,
-                LocalDateTime.now(),
-                LocalDateTime.now()
+                date,
+                date
         );
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(itemRepository.findById(1)).thenReturn(Optional.of(item));
