@@ -38,39 +38,30 @@ public class BookingControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private final User user = new User(2, "name", "test@mail.ru");
-    private final Item item = new Item(
-            1,
-            "name",
-            "description",
-            true,
-            2,
-            null
-    );
-    private final BookingDto bookingDto = new BookingDto(
-            1,
-            LocalDateTime.now(),
-            LocalDateTime.now().plusHours(1),
-            item,
-            user,
-            "WAITING"
-    );
-    private final BookingDto approvedBookingDto = new BookingDto(
-            1,
-            LocalDateTime.now(),
-            LocalDateTime.now().plusHours(1),
-            item,
-            user,
-            "APPROVED"
-    );
-    private final BookingCreateDto bookingCreateDto = new BookingCreateDto(
-            1,
-            LocalDateTime.now(),
-            LocalDateTime.now().plusHours(1)
-    );
-
     @Test
     public void addBooking() throws Exception {
+        Item item = Item.builder()
+                .id(1)
+                .name("name")
+                .description("description")
+                .available(true)
+                .owner(2)
+                .request(null)
+                .build();
+        User user = new User(2, "name", "test@mail.ru");
+        BookingDto bookingDto = BookingDto.builder()
+                .id(1)
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusHours(1))
+                .item(item)
+                .booker(user)
+                .status("WAITING")
+                .build();
+        BookingCreateDto bookingCreateDto = BookingCreateDto.builder()
+                .itemId(1)
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusHours(1))
+                .build();
         when(bookingService.addBooking(any(BookingCreateDto.class), anyInt())).thenReturn(bookingDto);
         mvc.perform(post("/bookings")
                         .content(objectMapper.writeValueAsString(bookingCreateDto))
@@ -91,6 +82,23 @@ public class BookingControllerTest {
 
     @Test
     public void approveBooking() throws Exception {
+        Item item = Item.builder()
+                .id(1)
+                .name("name")
+                .description("description")
+                .available(true)
+                .owner(2)
+                .request(null)
+                .build();
+        User user = new User(2, "name", "test@mail.ru");
+        BookingDto approvedBookingDto = BookingDto.builder()
+                .id(1)
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusHours(1))
+                .item(item)
+                .booker(user)
+                .status("APPROVED")
+                .build();
         when(bookingService.approveBooking(anyInt(), anyInt(), anyBoolean())).thenReturn(approvedBookingDto);
         mvc.perform(patch("/bookings/" + 1)
                         .header("X-Sharer-User-Id", 1)
@@ -111,6 +119,23 @@ public class BookingControllerTest {
 
     @Test
     public void getBookingById() throws Exception {
+        Item item = Item.builder()
+                .id(1)
+                .name("name")
+                .description("description")
+                .available(true)
+                .owner(2)
+                .request(null)
+                .build();
+        User user = new User(2, "name", "test@mail.ru");
+        BookingDto bookingDto = BookingDto.builder()
+                .id(1)
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusHours(1))
+                .item(item)
+                .booker(user)
+                .status("WAITING")
+                .build();
         when(bookingService.getBookingById(anyInt(), anyInt())).thenReturn(bookingDto);
         mvc.perform(get("/bookings/" + 1)
                         .header("X-Sharer-User-Id", 1)

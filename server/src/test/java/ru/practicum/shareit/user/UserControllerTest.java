@@ -33,10 +33,6 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private final UserDto userDto = new UserDto(1, "name", "test@mail.ru");
-    private final UserUpdateDto userUpdateDto = new UserUpdateDto("newName", "new@mail.ru");
-    private final UserDto updatedUserDto = new UserDto(1, "newName", "new@mail.ru");
-
     @Test
     public void getUsers() throws Exception {
         when(userService.getUsers()).thenReturn(new ArrayList<>());
@@ -52,6 +48,7 @@ public class UserControllerTest {
 
     @Test
     public void getUser() throws Exception {
+        UserDto userDto = new UserDto(1, "name", "test@mail.ru");
         when(userService.getUser(1)).thenReturn(userDto);
         mvc.perform(get("/users/" + 1)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -67,6 +64,7 @@ public class UserControllerTest {
 
     @Test
     public void createUser() throws Exception {
+        UserDto userDto = new UserDto(1, "name", "test@mail.ru");
         when(userService.addUser(any(UserDto.class))).thenReturn(userDto);
         mvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(userDto))
@@ -83,6 +81,8 @@ public class UserControllerTest {
 
     @Test
     public void updateUser() throws Exception {
+        UserUpdateDto userUpdateDto = new UserUpdateDto("newName", "new@mail.ru");
+        UserDto updatedUserDto = new UserDto(1, "newName", "new@mail.ru");
         when(userService.updateUser(anyInt(), any(UserUpdateDto.class))).thenReturn(updatedUserDto);
         mvc.perform(patch("/users/" + 1)
                         .content(objectMapper.writeValueAsString(userUpdateDto))

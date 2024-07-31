@@ -31,14 +31,11 @@ public class ItemRequestController {
     public List<ItemRequestDto> getAllRequests(@RequestParam int from,
                                                @RequestParam int size,
                                                @RequestHeader("X-Sharer-User-Id") int userId) {
-        return requestService.getAllRequests(from,size,userId);
+        return requestService.getAllRequests(from, size, userId);
     }
 
     @GetMapping("/{requestId}")
     public ItemRequestDto getRequestById(@PathVariable int requestId, @RequestHeader("X-Sharer-User-Id") int userId) {
         return requestService.getRequestById(requestId, userId);
     }
-
-
-
 }

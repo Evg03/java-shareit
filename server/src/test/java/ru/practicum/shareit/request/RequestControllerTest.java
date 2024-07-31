@@ -36,16 +36,15 @@ public class RequestControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private final ItemRequestDto requestDto = new ItemRequestDto(
-            1,
-            "description",
-            LocalDateTime.now(),
-            new ArrayList<>()
-    );
-    private final ItemRequestCreateDto itemRequestCreateDto = new ItemRequestCreateDto("description");
-
     @Test
     public void addRequest() throws Exception {
+        ItemRequestDto requestDto = ItemRequestDto.builder()
+                .id(1)
+                .description("description")
+                .created(LocalDateTime.now())
+                .items(new ArrayList<>())
+                .build();
+        ItemRequestCreateDto itemRequestCreateDto = new ItemRequestCreateDto("description");
         when(requestService.addRequest(any(ItemRequestCreateDto.class), anyInt())).thenReturn(requestDto);
         mvc.perform(post("/requests")
                         .content(objectMapper.writeValueAsString(itemRequestCreateDto))
@@ -94,6 +93,12 @@ public class RequestControllerTest {
 
     @Test
     public void getRequestById() throws Exception {
+        ItemRequestDto requestDto = ItemRequestDto.builder()
+                .id(1)
+                .description("description")
+                .created(LocalDateTime.now())
+                .items(new ArrayList<>())
+                .build();
         when(requestService.getRequestById(anyInt(), anyInt())).thenReturn(requestDto);
         mvc.perform(get("/requests/" + 1)
                         .header("X-Sharer-User-Id", 1)

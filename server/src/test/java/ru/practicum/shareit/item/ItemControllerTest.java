@@ -38,36 +38,15 @@ public class ItemControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private final ItemDto itemDto = new ItemDto(
-            1,
-            "name",
-            "description",
-            true,
-            null,
-            null,
-            new ArrayList<>(),
-            null
-    );
-    private final ItemUpdateDto itemUpdateDto = new ItemUpdateDto(
-            "newName",
-            "newDescription",
-            false
-    );
-    private final ItemDto updatedItem = new ItemDto(
-            1,
-            "newName",
-            "newDescription",
-            false,
-            null,
-            null,
-            null,
-            null
-    );
-    private final CommentDto commentDto = new CommentDto(1, "test comment", "name", LocalDateTime.now());
-    private final CommentCreateDto commentCreateDto = new CommentCreateDto();
-
     @Test
     public void addItem() throws Exception {
+        ItemDto itemDto = ItemDto.builder()
+                .id(1)
+                .name("name")
+                .description("description")
+                .available(true)
+                .comments(new ArrayList<>())
+                .build();
         when(itemService.addItem(any(ItemDto.class), anyInt())).thenReturn(itemDto);
         mvc.perform(post("/items")
                         .content(objectMapper.writeValueAsString(itemDto))
@@ -90,7 +69,13 @@ public class ItemControllerTest {
 
     @Test
     public void addComment() throws Exception {
-        commentCreateDto.setText("test comment");
+        CommentDto commentDto = CommentDto.builder()
+                .id(1)
+                .text("test comment")
+                .authorName("name")
+                .created(LocalDateTime.now())
+                .build();
+        CommentCreateDto commentCreateDto = new CommentCreateDto("test comment");
         when(itemService.addComment(anyInt(), anyInt(), any(CommentCreateDto.class))).thenReturn(commentDto);
         mvc.perform(post("/items/" + 1 + "/comment")
                         .content(objectMapper.writeValueAsString(commentCreateDto))
@@ -109,6 +94,18 @@ public class ItemControllerTest {
 
     @Test
     public void updateItem() throws Exception {
+        ItemUpdateDto itemUpdateDto = ItemUpdateDto.builder()
+                .name("newName")
+                .description("newDescription")
+                .available(false)
+                .build();
+        ItemDto updatedItem = ItemDto.builder()
+                .id(1)
+                .name("newName")
+                .description("newDescription")
+                .available(false)
+                .comments(new ArrayList<>())
+                .build();
         when(itemService.updateItem(any(ItemUpdateDto.class), anyInt(), anyInt())).thenReturn(updatedItem);
         mvc.perform(patch("/items/" + 1)
                         .content(objectMapper.writeValueAsString(itemUpdateDto))
@@ -131,6 +128,13 @@ public class ItemControllerTest {
 
     @Test
     public void getItem() throws Exception {
+        ItemDto itemDto = ItemDto.builder()
+                .id(1)
+                .name("name")
+                .description("description")
+                .available(true)
+                .comments(new ArrayList<>())
+                .build();
         when(itemService.getItem(anyInt(), anyInt())).thenReturn(itemDto);
         mvc.perform(get("/items/" + 1)
                         .header("X-Sharer-User-Id", 1)
@@ -177,6 +181,4 @@ public class ItemControllerTest {
                 );
         verify(itemService, times(1)).searchByText(anyString());
     }
-
-
 }

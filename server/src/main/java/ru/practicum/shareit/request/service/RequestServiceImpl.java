@@ -30,11 +30,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ItemRequestDto addRequest(ItemRequestCreateDto itemRequestCreateDto, int userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            log.warn("Пользователя с id = {} не существует", userId);
-            throw new UserNotFoundException(String.format("Пользователя с id = %s не существует", userId));
-        }
+        checkUserExists(userId);
         ItemRequest itemRequest = new ItemRequest(null,
                 itemRequestCreateDto.getDescription(),
                 userId,
@@ -45,11 +41,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<ItemRequestDto> getRequests(int userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            log.warn("Пользователя с id = {} не существует", userId);
-            throw new UserNotFoundException(String.format("Пользователя с id = %s не существует", userId));
-        }
+        checkUserExists(userId);
         return requestRepository.findAllByRequestorOrderByCreatedDesc(userId).stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
@@ -57,11 +49,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<ItemRequestDto> getAllRequests(int from, int size, int userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            log.warn("Пользователя с id = {} не существует", userId);
-            throw new UserNotFoundException(String.format("Пользователя с id = %s не существует", userId));
-        }
+        checkUserExists(userId);
         List<ItemRequest> requests = requestRepository.findAllByRequestorNotOrderByCreatedDesc(userId,
                 PageRequest.of(from, size));
         return requests.stream()
@@ -71,16 +59,20 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ItemRequestDto getRequestById(int requestId, int userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            log.warn("Пользователя с id = {} не существует", userId);
-            throw new UserNotFoundException(String.format("Пользователя с id = %s не существует", userId));
-        }
+        checkUserExists(userId);
         Optional<ItemRequest> request = requestRepository.findById(requestId);
         if (request.isEmpty()) {
             log.warn("Request'a с id = {} не существует", requestId);
             throw new RequestNotFoundException(String.format("Request'a с id = %s не существует", requestId));
         }
         return ItemRequestMapper.toItemRequestDto(request.get());
+    }
+
+    private void checkUserExists(int userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            log.warn("Пользователя с id = {} не существует", userId);
+            throw new UserNotFoundException(String.format("Пользователя с id = %s не существует", userId));
+        }
     }
 }
